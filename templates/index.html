@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Услуги Эскорта Ивацевичи</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Анимации */
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes floatUp {
+            0% { top: 50%; }
+            100% { top: 15%; }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Приветственный текст */
+        .welcome-message {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.7);
+            background: linear-gradient(90deg, #58a6ff, #1f6feb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            padding: 10px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.5s ease-out forwards;
+            text-align: center;
+            margin: 0 auto;
+            max-width: 90%;
+        }
+
+        .welcome-container {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: floatUp 2s ease-in-out 1.5s forwards;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Блоки */
+        .boxes-container {
+            opacity: 0;
+            display: grid;
+            grid-template-columns: repeat(2, 200px);
+            grid-gap: 30px;
+            margin-top: 25vh;
+            animation: fadeIn 1s ease-out 3.5s forwards;
+        }
+
+        .box-row {
+            display: contents;
+        }
+
+        .box {
+            width: 200px;
+            height: 180px;
+            background-color: #161b22;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #30363d;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .box:hover {
+            transform: scale(1.05);
+            background-color: #1f6feb;
+            border-color: #1f6feb;
+            box-shadow: 0 0 15px rgba(31, 111, 235, 0.5);
+        }
+
+        .box a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            .welcome-message {
+                font-size: 1.8rem;
+                line-height: 1.3;
+            }
+
+            .boxes-container {
+                grid-template-columns: repeat(2, 150px);
+                grid-gap: 20px;
+            }
+
+            .box {
+                width: 150px;
+                height: 150px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="fade-in">
+    <div class="welcome-container">
+        <div class="welcome-message">Добро пожаловать на Ycлyги 3ck0PTа UBaц3Buч!</div>
+    </div>
+
+    <div class="boxes-container">
+        <div class="box-row">
+            <div class="box">
+                <a href="{{ url_for('services') }}" data-smooth-navigate>Наши Услуги</a>
+            </div>
+            <div class="box">
+                <a href="{{ url_for('girls') }}" data-smooth-navigate>Наши Девушки</a>
+            </div>
+        </div>
+        <div class="box-row">
+            <div class="box">
+                <a href="{{ url_for('reviews') }}" data-smooth-navigate>Отзывы</a>
+            </div>
+            <div class="box">
+                <a href="{{ url_for('workers') }}" data-smooth-navigate>Работники</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

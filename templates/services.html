@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наши Услуги</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .services-content {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #161b22;
+            border-radius: 15px;
+            border: 1px solid #30363d;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            min-height: 60vh;
+        }
+
+        .service-headline {
+            color: #58a6ff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 2px solid #30363d;
+            padding-bottom: 15px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background-color: #1f6feb;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #58a6ff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(31, 111, 235, 0.4);
+        }
+
+        .address-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #0d1117;
+            color: #8b949e;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 10px 0;
+            border-top: 1px solid #30363d;
+        }
+
+        .highlight {
+            color: #58a6ff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="fade-in">
+    <div class="services-content">
+        <h1 class="service-headline">Наши Эксклюзивные Услуги</h1>
+
+        <div class="service-description">
+            <h2>Мы предоставляем наши отличные эскорт услуги по всему городу Ивацевичи!</h2>
+            <p>Наша команда профессионалов гарантирует:</p>
+            <ul>
+                <li>Высокий уровень сервиса 24/7</li>
+                <li>Абсолютную дискретность</li>
+                <li>Только проверенных сопровождающих</li>
+                <li>Индивидуальный подход</li>
+                <li>Гибкую систему оплаты</li>
+            </ul>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="back-button" data-smooth-navigate>Вернуться на главную</a>
+    </div>
+
+    <div class="address-footer">
+        Наш адрес: ул. Северная 2, Ивацевичи, СШ №3, третий этаж, мужской туалет.
+        <br>Контактный телефон: <span class="highlight">+375 33 350 4014</span> (звонить с 21:00 до 06:00)
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

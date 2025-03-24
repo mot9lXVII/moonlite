@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наши Девушки</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .girls-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: #58a6ff;
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+        }
+
+        .girls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .girl-card {
+            background-color: #161b22;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #30363d;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .photo-container {
+            width: 100%;
+            height: 350px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #30363d;
+        }
+
+        .girl-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        /* Приближенное фото Марго */
+        .girl-card:nth-child(1) .girl-photo {
+            transform: scale(1.3);
+            transform-origin: center center;
+        }
+
+        .girl-card:nth-child(1):hover .girl-photo {
+            transform: scale(1.35);
+        }
+
+        /* Остальные фото */
+        .girl-card:not(:nth-child(1)) .photo-container {
+            height: 300px;
+        }
+
+        .girl-card:not(:nth-child(1)):hover .girl-photo {
+            transform: scale(1.1);
+        }
+
+        .girl-name {
+            color: #58a6ff;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .girl-details {
+            color: #8b949e;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .girl-note {
+            color: #f85149;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .back-button {
+            display: block;
+            width: 250px;
+            margin: 50px auto 0;
+            padding: 15px 30px;
+            background-color: #1f6feb;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .back-button:hover {
+            background-color: #58a6ff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(31, 111, 235, 0.4);
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            .photo-container,
+            .girl-card:not(:nth-child(1)) .photo-container {
+                height: 280px;
+            }
+
+            .girl-card:nth-child(1) .girl-photo {
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="girls-container">
+        <h1>Наши Девушки</h1>
+
+        <div class="girls-grid">
+            <!-- Марго Сладка (приближенное фото) -->
+            <div class="girl-card">
+                <div class="photo-container">
+                    <img src="{{ url_for('static', filename='images/girls/girl1.jpg') }}" alt="Марго Сладка" class="girl-photo">
+                </div>
+                <h2 class="girl-name">Марго Сладка</h2>
+                <p class="girl-details">15 лет, 160 см</p>
+                <p class="girl-note">Футджоб не предлагать</p>
+            </div>
+
+            <!-- Остальные девушки -->
+            <div class="girl-card">
+                <div class="photo-container">
+                    <img src="{{ url_for('static', filename='images/girls/girl2.jpg') }}" alt="Потаскуха Ржавого" class="girl-photo">
+                </div>
+                <h2 class="girl-name">Потаскуха Ржавого</h2>
+                <p class="girl-details">13 лет, 163 см</p>
+                <p class="girl-note">Без ограничений</p>
+            </div>
+
+            <div class="girl-card">
+                <div class="photo-container">
+                    <img src="{{ url_for('static', filename='images/girls/girl4.jpg') }}" alt="Ленка Алексеева" class="girl-photo">
+                </div>
+                <h2 class="girl-name">Ленка Алексеева</h2>
+                <p class="girl-details">16 лет, 168 см</p>
+                <p class="girl-note">VIP-обслуживание</p>
+            </div>
+
+            <div class="girl-card">
+                <div class="photo-container">
+                    <img src="{{ url_for('static', filename='images/girls/girl5.jpg') }}" alt="Солевая Альтуха" class="girl-photo">
+                </div>
+                <h2 class="girl-name">Солевая Альтуха</h2>
+                <p class="girl-details">14 лет, 167 см</p>
+                <p class="girl-note">Вечерние встречи</p>
+            </div>
+        </div>
+
+        <a href="{{ url_for('index') }}" class="back-button">Вернуться на главную</a>
+    </div>
+</body>
+</html>
