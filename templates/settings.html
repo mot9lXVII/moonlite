@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отзывы клиентов</title>
+    <title>Настройки</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         :root {
@@ -17,18 +17,18 @@
         }
 
         body {
-            overflow-y: scroll;
-            min-height: 100vh;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
-        .reviews-content {
-            max-width: 900px;
-            margin: 30px auto;
+        .settings-container {
+            max-width: 600px;
+            margin: 50px auto;
             padding: 30px;
             background-color: var(--card-color);
             border-radius: 15px;
@@ -36,51 +36,36 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
 
-        .reviews-title {
-            color: var(--secondary-color);
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.2rem;
-        }
+        h1 { color: var(--secondary-color); text-align: center; margin-bottom: 40px; font-size: 2rem; }
+        .section { margin-bottom: 40px; }
+        .section h2 { color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 20px; }
 
-        .review {
+        .theme-options, .language-options { display: flex; flex-wrap: wrap; gap: 15px; }
+
+        .option {
+            padding: 10px 20px;
             background-color: var(--bg-color);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
             border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .review-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .review-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            object-fit: cover;
-        }
-
-        .review-author { color: var(--secondary-color); font-weight: 600; }
-        .review-date { color: var(--muted-text); font-size: 0.8rem; margin-left: 10px; }
-        .review-text { line-height: 1.6; }
+        .option:hover { border-color: var(--secondary-color); transform: translateY(-2px); }
+        .option.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
 
         .back-button {
             display: block;
             width: 200px;
-            margin: 40px auto 0;
+            margin: 0 auto;
             padding: 12px 25px;
             background-color: var(--primary-color);
             color: white;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
         .back-button:hover {
@@ -91,52 +76,34 @@
     </style>
 </head>
 <body class="fade-in">
-    <div class="reviews-content">
-        <h1 class="reviews-title">Отзывы наших клиентов</h1>
+    <div class="settings-container">
+        <h1>Настройки</h1>
 
-        <div class="review">
-            <div class="review-header">
-                <img src="{{ url_for('static', filename='images/avatar1.jpg') }}" alt="Аватар" class="review-avatar">
-                <div>
-                    <span class="review-author">Черножепый</span>
-                    <span class="review-date">15.05.2023</span>
-                </div>
-            </div>
-            <div class="review-text">
-                Ленка - просто бомба! VIP-обслуживание на высшем уровне. Никаких нареканий, все четко по договорённостям. Буду рекомендовать друзьям!
+        <div class="section">
+            <h2>Темы:</h2>
+            <div class="theme-options">
+                <div class="option" data-theme="blue">Синий</div>
+                <div class="option" data-theme="red">Красный</div>
+                <div class="option" data-theme="yellow">Жёлтый</div>
+                <div class="option" data-theme="white">Белый</div>
+                <div class="option" data-theme="pink">Розовый</div>
             </div>
         </div>
 
-        <div class="review">
-            <div class="review-header">
-                <img src="{{ url_for('static', filename='images/avatar2.jpg') }}" alt="Аватар" class="review-avatar">
-                <div>
-                    <span class="review-author">Фильджобс</span>
-                    <span class="review-date">02.06.2023</span>
-                </div>
-            </div>
-            <div class="review-text">
-                Марго - милашка, но действительно с мазолями. В остальном - полный восторг! Девушка с характером, но это даже плюс.
-            </div>
-        </div>
-
-        <div class="review">
-            <div class="review-header">
-                <img src="{{ url_for('static', filename='images/avatar3.jpg') }}" alt="Аватар" class="review-avatar">
-                <div>
-                    <span class="review-author">Тамирлан</span>
-                    <span class="review-date">22.06.2023</span>
-                </div>
-            </div>
-            <div class="review-text">
-                Потаскуха Ржавого - это нечто! Воскресенье действительно её выходной, в остальные дни - полный отрыв. Рекомендую!
+        <div class="section">
+            <h2>Язык:</h2>
+            <div class="language-options">
+                <div class="option" data-lang="be">Белорусский</div>
+                <div class="option" data-lang="ru">Русский</div>
+                <div class="option" data-lang="ruzz">Руzzкий</div>
+                <div class="option" data-lang="ruz">Руz</div>
+                <div class="option" data-lang="shaman">Шаман</div>
             </div>
         </div>
 
         <a href="{{ url_for('index') }}" class="back-button" data-smooth-navigate>Вернуться на главную</a>
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
         function setTheme(theme) {
             switch(theme) {
@@ -161,11 +128,38 @@
                     document.documentElement.style.setProperty('--secondary-color', '#ff58a6');
                     break;
             }
+            localStorage.setItem('theme', theme);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            const themeOptions = document.querySelectorAll('.theme-options .option');
+            const languageOptions = document.querySelectorAll('.language-options .option');
             const savedTheme = localStorage.getItem('theme') || 'blue';
+
             setTheme(savedTheme);
+            themeOptions.forEach(opt => {
+                if (opt.getAttribute('data-theme') === savedTheme) opt.classList.add('active');
+            });
+
+            themeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    const theme = this.getAttribute('data-theme');
+                    setTheme(theme);
+                });
+            });
+
+            languageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    languageOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    const lang = this.getAttribute('data-lang');
+                    console.log('Выбран язык:', lang);
+                });
+            });
+
+            document.querySelector('.option[data-lang="ru"]').classList.add('active');
         });
     </script>
 </body>

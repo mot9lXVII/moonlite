@@ -4,57 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Услуги Эскорта Ивацевичи</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-color: #161b22;
+            --text-color: #c9d1d9;
+            --primary-color: #1f6feb;
+            --secondary-color: #58a6ff;
+            --accent-color: #238636;
+            --border-color: #30363d;
+            --muted-text: #8b949e;
+            --error-color: #f85149;
+        }
+
+        html { height: 100%; }
+
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
 
-        /* Анимации */
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+        .settings-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            fill: var(--muted-text);
         }
 
-        @keyframes floatUp {
-            0% { top: 50%; }
-            100% { top: 15%; }
+        .settings-icon:hover {
+            transform: rotate(90deg);
+            fill: var(--secondary-color);
         }
 
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatUp { from { top: 50%; } to { top: 15%; } }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes modalFadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
 
-        /* Приветственный текст */
-        .welcome-message {
-            font-size: 2.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(88, 166, 255, 0.7);
-            background: linear-gradient(90deg, #58a6ff, #1f6feb);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            padding: 10px;
-            border-radius: 10px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 1.5s ease-out forwards;
-            text-align: center;
-            margin: 0 auto;
-            max-width: 90%;
-        }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .fade-out { animation: fadeOut 0.5s ease-out forwards; }
 
         .welcome-container {
             position: absolute;
@@ -65,29 +68,45 @@
             text-align: center;
         }
 
-        /* Блоки */
+        .welcome-message {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--secondary-color);
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            padding: 10px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.5s ease-out forwards;
+            margin: 0 auto;
+            max-width: 90%;
+        }
+
         .boxes-container {
             opacity: 0;
             display: grid;
             grid-template-columns: repeat(2, 200px);
-            grid-gap: 30px;
+            gap: 30px;
             margin-top: 25vh;
             animation: fadeIn 1s ease-out 3.5s forwards;
         }
 
-        .box-row {
-            display: contents;
-        }
+        .box-row { display: contents; }
 
         .box {
             width: 200px;
             height: 180px;
-            background-color: #161b22;
+            background-color: var(--card-color);
             border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid #30363d;
+            border: 1px solid var(--border-color);
             transition: all 0.3s ease;
             cursor: pointer;
             font-size: 1.2rem;
@@ -98,9 +117,9 @@
 
         .box:hover {
             transform: scale(1.05);
-            background-color: #1f6feb;
-            border-color: #1f6feb;
-            box-shadow: 0 0 15px rgba(31, 111, 235, 0.5);
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
         }
 
         .box a {
@@ -113,50 +132,290 @@
             height: 100%;
         }
 
-        /* Адаптация для мобильных */
+        .order-box { grid-column: 1 / -1; width: 200px; margin: 20px auto 0; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show { opacity: 1; }
+
+        .modal-content {
+            background-color: var(--card-color);
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out forwards;
+        }
+
+        .modal.closing .modal-content { animation: modalFadeOut 0.3s ease-out forwards; }
+
+        .close { color: var(--muted-text); float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: var(--text-color); }
+
+        .girls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+
+        .girl-card {
+            background-color: var(--bg-color);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .girl-card:hover { transform: translateY(-5px); border-color: var(--secondary-color); }
+
+        .girl-photo { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .girl-name { color: var(--secondary-color); font-size: 1.2rem; margin-bottom: 5px; }
+        .girl-details { color: var(--muted-text); font-size: 0.9rem; }
+        .girl-note { color: var(--error-color); font-style: italic; font-size: 0.9rem; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--secondary-color); }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover { background-color: var(--secondary-color); }
+
+        #successModal .modal-content { max-width: 400px; text-align: center; }
+        .success-message { font-size: 1.5rem; color: var(--secondary-color); margin: 20px 0; text-shadow: 0 0 10px var(--secondary-color); }
+
         @media (max-width: 768px) {
-            .welcome-message {
-                font-size: 1.8rem;
-                line-height: 1.3;
-            }
-
-            .boxes-container {
-                grid-template-columns: repeat(2, 150px);
-                grid-gap: 20px;
-            }
-
-            .box {
-                width: 150px;
-                height: 150px;
-                font-size: 1rem;
-            }
+            .welcome-message { font-size: 1.8rem; line-height: 1.3; }
+            .boxes-container { grid-template-columns: repeat(2, 150px); gap: 20px; }
+            .box { width: 150px; height: 150px; font-size: 1rem; }
+            .order-box { width: 150px; }
+            .girls-grid { grid-template-columns: 1fr; }
+            .girl-photo { height: 150px; }
         }
     </style>
 </head>
 <body class="fade-in">
+    <a href="/settings" data-smooth-navigate>
+        <svg class="settings-icon" viewBox="0 0 24 24">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.49.49 0 0 0-.48-.41h-3.84a.49.49 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.8 8.39a.49.49 0 0 0 .12.61l2.03 1.58c-.04.3-.06.62-.06.94 0 .32.02.64.06.94L2.92 14.04a.49.49 0 0 0-.12.61l1.92 3.32a.49.49 0 0 0 .59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54a.49.49 0 0 0 .48.41h3.84a.49.49 0 0 0 .48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96a.49.49 0 0 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+    </a>
+
     <div class="welcome-container">
         <div class="welcome-message">Добро пожаловать на Ycлyги 3ck0PTа UBaц3Buч!</div>
     </div>
 
     <div class="boxes-container">
         <div class="box-row">
-            <div class="box">
-                <a href="{{ url_for('services') }}" data-smooth-navigate>Наши Услуги</a>
-            </div>
-            <div class="box">
-                <a href="{{ url_for('girls') }}" data-smooth-navigate>Наши Девушки</a>
-            </div>
+            <div class="box"><a href="/services" data-smooth-navigate>Наши Услуги</a></div>
+            <div class="box"><a href="/girls" data-smooth-navigate>Наши Девушки</a></div>
         </div>
         <div class="box-row">
-            <div class="box">
-                <a href="{{ url_for('reviews') }}" data-smooth-navigate>Отзывы</a>
-            </div>
-            <div class="box">
-                <a href="{{ url_for('workers') }}" data-smooth-navigate>Работники</a>
-            </div>
+            <div class="box"><a href="/reviews" data-smooth-navigate>Отзывы</a></div>
+            <div class="box"><a href="/workers" data-smooth-navigate>Работники</a></div>
+        </div>
+        <div class="box order-box" id="orderBtn">Заказать</div>
+    </div>
+
+    <div id="girlsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Выберите девушку</h2>
+            <div id="girlsGrid" class="girls-grid"></div>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2 id="orderTitle">Оформление заказа</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="clientName">Ваше имя:</label>
+                    <input type="text" id="clientName" required>
+                </div>
+                <div class="form-group">
+                    <label for="clientPhone">Телефон:</label>
+                    <input type="tel" id="clientPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderDate">Дата и время:</label>
+                    <input type="datetime-local" id="orderDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderComment">Комментарий:</label>
+                    <textarea id="orderComment"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Подтвердить заказ</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <div class="success-message">Отлично! Мы свяжемся с вами в ближайшее время.</div>
+        </div>
+    </div>
+
+    <script>
+        const girlsData = [
+            { id: 1, name: "Марго Сладка", age: 15, height: 160, description: "VIP-обслуживание, футджоб не предлагать", image: "girl1.jpg" },
+            { id: 2, name: "Потаскуха Ржавого", age: 13, height: 162, description: "Без ограничений", image: "girl2.jpg" },
+            { id: 3, name: "Ленка Алексеева", age: 16, height: 168, description: "Вечерние встречи", image: "girl4.jpg" },
+            { id: 4, name: "Солевая Альтуха", age: 14, height: 167, description: "Индивидуальный подход", image: "girl5.jpg" }
+        ];
+
+        const orderBtn = document.getElementById('orderBtn');
+        const girlsModal = document.getElementById('girlsModal');
+        const orderModal = document.getElementById('orderModal');
+        const successModal = document.getElementById('successModal');
+        const girlsGrid = document.getElementById('girlsGrid');
+        const orderForm = document.getElementById('orderForm');
+        const orderTitle = document.getElementById('orderTitle');
+        const closeButtons = document.querySelectorAll('.close');
+
+        let selectedGirl = null;
+
+        function setTheme(theme) {
+            switch(theme) {
+                case 'blue':
+                    document.documentElement.style.setProperty('--primary-color', '#1f6feb');
+                    document.documentElement.style.setProperty('--secondary-color', '#58a6ff');
+                    break;
+                case 'red':
+                    document.documentElement.style.setProperty('--primary-color', '#eb1f1f');
+                    document.documentElement.style.setProperty('--secondary-color', '#ff5858');
+                    break;
+                case 'yellow':
+                    document.documentElement.style.setProperty('--primary-color', '#ebb31f');
+                    document.documentElement.style.setProperty('--secondary-color', '#ffd758');
+                    break;
+                case 'white':
+                    document.documentElement.style.setProperty('--primary-color', '#d9d9d9');
+                    document.documentElement.style.setProperty('--secondary-color', '#ffffff');
+                    break;
+                case 'pink':
+                    document.documentElement.style.setProperty('--primary-color', '#eb1f6f');
+                    document.documentElement.style.setProperty('--secondary-color', '#ff58a6');
+                    break;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'blue';
+            setTheme(savedTheme);
+
+            orderBtn.addEventListener('click', showGirlsModal);
+            closeButtons.forEach(btn => btn.addEventListener('click', closeModals));
+            window.addEventListener('click', function(event) {
+                if (event.target === girlsModal || event.target === orderModal || event.target === successModal) {
+                    closeModals();
+                }
+            });
+            document.querySelectorAll('[data-smooth-navigate]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.classList.add('fade-out');
+                    setTimeout(() => window.location.href = this.getAttribute('href'), 500);
+                });
+            });
+            fillGirlsGrid();
+        });
+
+        function showModal(modal) {
+            modal.style.display = 'block';
+            setTimeout(() => modal.classList.add('show'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal(modal, callback) {
+            modal.classList.remove('show');
+            modal.classList.add('closing');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.remove('closing');
+                if (callback) callback();
+            }, 300);
+        }
+
+        function showGirlsModal() { showModal(girlsModal); }
+
+        function showOrderForm(girl) {
+            selectedGirl = girl;
+            orderTitle.textContent = `Оформление заказа: ${girl.name}`;
+            hideModal(girlsModal, () => showModal(orderModal));
+        }
+
+        function closeModals() {
+            [girlsModal, orderModal, successModal].forEach(modal => {
+                if (modal.style.display === 'block') hideModal(modal);
+            });
+            document.body.style.overflow = 'auto';
+        }
+
+        function fillGirlsGrid() {
+            girlsGrid.innerHTML = '';
+            girlsData.forEach(girl => {
+                const girlCard = document.createElement('div');
+                girlCard.className = 'girl-card';
+                girlCard.innerHTML = `
+                    <img src="/static/images/girls/${girl.image}" alt="${girl.name}" class="girl-photo">
+                    <h3 class="girl-name">${girl.name}</h3>
+                    <p class="girl-details">${girl.age} лет, ${girl.height} см</p>
+                    <p class="girl-note">${girl.description}</p>
+                `;
+                girlCard.addEventListener('click', () => showOrderForm(girl));
+                girlsGrid.appendChild(girlCard);
+            });
+        }
+
+        orderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = {
+                girl: selectedGirl.name,
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                date: document.getElementById('orderDate').value,
+                comment: document.getElementById('orderComment').value
+            };
+            console.log('Данные заказа:', formData);
+            hideModal(orderModal, () => {
+                showModal(successModal);
+                setTimeout(() => hideModal(successModal), 3000);
+            });
+            orderForm.reset();
+        });
+    </script>
 </body>
 </html>

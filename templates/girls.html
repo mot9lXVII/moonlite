@@ -6,9 +6,20 @@
     <title>Наши Девушки</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-color: #161b22;
+            --text-color: #c9d1d9;
+            --primary-color: #1f6feb;
+            --secondary-color: #58a6ff;
+            --border-color: #30363d;
+            --muted-text: #8b949e;
+            --error-color: #f85149;
+        }
+
         body {
-            background-color: #0d1117;
-            color: #c9d1d9;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
@@ -22,7 +33,7 @@
         }
 
         h1 {
-            color: #58a6ff;
+            color: var(--secondary-color);
             text-align: center;
             margin-bottom: 50px;
             font-size: 2.5rem;
@@ -36,10 +47,10 @@
         }
 
         .girl-card {
-            background-color: #161b22;
+            background-color: var(--card-color);
             border-radius: 12px;
             padding: 25px;
-            border: 1px solid #30363d;
+            border: 1px solid var(--border-color);
             transition: all 0.3s ease;
             text-align: center;
         }
@@ -51,7 +62,7 @@
             border-radius: 8px;
             overflow: hidden;
             position: relative;
-            border: 2px solid #30363d;
+            border: 2px solid var(--border-color);
         }
 
         .girl-photo {
@@ -61,49 +72,21 @@
             transition: transform 0.5s ease;
         }
 
-        /* Приближенное фото Марго */
-        .girl-card:nth-child(1) .girl-photo {
-            transform: scale(1.3);
-            transform-origin: center center;
-        }
+        .girl-card:nth-child(1) .girl-photo { transform: scale(1.3); transform-origin: center center; }
+        .girl-card:nth-child(1):hover .girl-photo { transform: scale(1.35); }
+        .girl-card:not(:nth-child(1)) .photo-container { height: 300px; }
+        .girl-card:not(:nth-child(1)):hover .girl-photo { transform: scale(1.1); }
 
-        .girl-card:nth-child(1):hover .girl-photo {
-            transform: scale(1.35);
-        }
-
-        /* Остальные фото */
-        .girl-card:not(:nth-child(1)) .photo-container {
-            height: 300px;
-        }
-
-        .girl-card:not(:nth-child(1)):hover .girl-photo {
-            transform: scale(1.1);
-        }
-
-        .girl-name {
-            color: #58a6ff;
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .girl-details {
-            color: #8b949e;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .girl-note {
-            color: #f85149;
-            font-style: italic;
-            font-size: 0.9rem;
-        }
+        .girl-name { color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 5px; }
+        .girl-details { color: var(--muted-text); margin-bottom: 15px; font-size: 1.1rem; }
+        .girl-note { color: var(--error-color); font-style: italic; font-size: 0.9rem; }
 
         .back-button {
             display: block;
             width: 250px;
             margin: 50px auto 0;
             padding: 15px 30px;
-            background-color: #1f6feb;
+            background-color: var(--primary-color);
             color: white;
             border-radius: 8px;
             text-decoration: none;
@@ -114,21 +97,14 @@
         }
 
         .back-button:hover {
-            background-color: #58a6ff;
+            background-color: var(--secondary-color);
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(31, 111, 235, 0.4);
+            box-shadow: 0 5px 15px var(--primary-color);
         }
 
-        /* Адаптация для мобильных */
         @media (max-width: 768px) {
-            .photo-container,
-            .girl-card:not(:nth-child(1)) .photo-container {
-                height: 280px;
-            }
-
-            .girl-card:nth-child(1) .girl-photo {
-                transform: scale(1.2);
-            }
+            .photo-container, .girl-card:not(:nth-child(1)) .photo-container { height: 280px; }
+            .girl-card:nth-child(1) .girl-photo { transform: scale(1.2); }
         }
     </style>
 </head>
@@ -137,7 +113,6 @@
         <h1>Наши Девушки</h1>
 
         <div class="girls-grid">
-            <!-- Марго Сладка (приближенное фото) -->
             <div class="girl-card">
                 <div class="photo-container">
                     <img src="{{ url_for('static', filename='images/girls/girl1.jpg') }}" alt="Марго Сладка" class="girl-photo">
@@ -147,13 +122,12 @@
                 <p class="girl-note">Футджоб не предлагать</p>
             </div>
 
-            <!-- Остальные девушки -->
             <div class="girl-card">
                 <div class="photo-container">
                     <img src="{{ url_for('static', filename='images/girls/girl2.jpg') }}" alt="Потаскуха Ржавого" class="girl-photo">
                 </div>
                 <h2 class="girl-name">Потаскуха Ржавого</h2>
-                <p class="girl-details">13 лет, 163 см</p>
+                <p class="girl-details">13 лет, 162 см</p>
                 <p class="girl-note">Без ограничений</p>
             </div>
 
@@ -178,5 +152,37 @@
 
         <a href="{{ url_for('index') }}" class="back-button">Вернуться на главную</a>
     </div>
+
+    <script>
+        function setTheme(theme) {
+            switch(theme) {
+                case 'blue':
+                    document.documentElement.style.setProperty('--primary-color', '#1f6feb');
+                    document.documentElement.style.setProperty('--secondary-color', '#58a6ff');
+                    break;
+                case 'red':
+                    document.documentElement.style.setProperty('--primary-color', '#eb1f1f');
+                    document.documentElement.style.setProperty('--secondary-color', '#ff5858');
+                    break;
+                case 'yellow':
+                    document.documentElement.style.setProperty('--primary-color', '#ebb31f');
+                    document.documentElement.style.setProperty('--secondary-color', '#ffd758');
+                    break;
+                case 'white':
+                    document.documentElement.style.setProperty('--primary-color', '#d9d9d9');
+                    document.documentElement.style.setProperty('--secondary-color', '#ffffff');
+                    break;
+                case 'pink':
+                    document.documentElement.style.setProperty('--primary-color', '#eb1f6f');
+                    document.documentElement.style.setProperty('--secondary-color', '#ff58a6');
+                    break;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'blue';
+            setTheme(savedTheme);
+        });
+    </script>
 </body>
 </html>

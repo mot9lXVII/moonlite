@@ -22,18 +22,14 @@ def reviews():
 def workers():
     return render_template('workers.html')
 
-# Маршруты для статических файлов
-@app.route('/static/images/workers/<path:filename>')
-def worker_images(filename):
-    return send_from_directory('static/images/workers', filename)
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')  # Маршрут для настроек
 
-@app.route('/static/css/<path:filename>')
-def css_files(filename):
-    return send_from_directory('static/css', filename)
-
-@app.route('/static/js/<path:filename>')
-def js_files(filename):
-    return send_from_directory('static/js', filename)
+# Статические файлы (если используешь изображения или CSS)
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
