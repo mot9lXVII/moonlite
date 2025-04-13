@@ -4,163 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Настройки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        :root {
-            --bg-color: #0d1117;
-            --card-color: #161b22;
-            --text-color: #c9d1d9;
-            --primary-color: #1f6feb;
-            --secondary-color: #58a6ff;
-            --border-color: #30363d;
-            --muted-text: #8b949e;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            overflow-y: auto;
-        }
-
-        .settings-container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: var(--card-color);
-            border-radius: 15px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        }
-
-        h1 { color: var(--secondary-color); text-align: center; margin-bottom: 40px; font-size: 2rem; }
-        .section { margin-bottom: 40px; }
-        .section h2 { color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 20px; }
-
-        .theme-options, .language-options { display: flex; flex-wrap: wrap; gap: 15px; }
-
-        .option {
-            padding: 10px 20px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .option:hover { border-color: var(--secondary-color); transform: translateY(-2px); }
-        .option.active { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
-
-        .back-button {
-            display: block;
-            width: 200px;
-            margin: 0 auto;
-            padding: 12px 25px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .back-button:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px var(--primary-color);
-        }
-    </style>
 </head>
 <body class="fade-in">
+    <div id="particles-js"></div>
+
+    <header class="site-header">
+        <a href="/" class="logo" data-smooth-navigate>Услуги Эскорта</a>
+        <nav class="main-nav">
+            <a href="/services" data-smooth-navigate>Услуги</a>
+            <a href="/girls" data-smooth-navigate>Девушки</a>
+            <a href="/reviews" data-smooth-navigate>Отзывы</a>
+            <a href="/workers" data-smooth-navigate>Работники</a>
+            <a href="/settings" data-smooth-navigate>Настройки</a>
+            <a href="#" id="orderBtn">Заказать</a>
+        </nav>
+    </header>
+
     <div class="settings-container">
-        <h1>Настройки</h1>
-
-        <div class="section">
-            <h2>Темы:</h2>
-            <div class="theme-options">
-                <div class="option" data-theme="blue">Синий</div>
-                <div class="option" data-theme="red">Красный</div>
-                <div class="option" data-theme="yellow">Жёлтый</div>
-                <div class="option" data-theme="white">Белый</div>
-                <div class="option" data-theme="pink">Розовый</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>Язык:</h2>
-            <div class="language-options">
-                <div class="option" data-lang="be">Белорусский</div>
-                <div class="option" data-lang="ru">Русский</div>
-                <div class="option" data-lang="ruzz">Руzzкий</div>
-                <div class="option" data-lang="ruz">Руz</div>
-                <div class="option" data-lang="shaman">Шаман</div>
-            </div>
-        </div>
-
-        <a href="{{ url_for('index') }}" class="back-button" data-smooth-navigate>Вернуться на главную</a>
+        <h2>Выберите тему</h2>
+        <select id="themeSelect">
+            <option value="dark">Тёмная</option>
+            <option value="light">Светлая</option>
+        </select>
     </div>
 
-    <script>
-        function setTheme(theme) {
-            switch(theme) {
-                case 'blue':
-                    document.documentElement.style.setProperty('--primary-color', '#1f6feb');
-                    document.documentElement.style.setProperty('--secondary-color', '#58a6ff');
-                    break;
-                case 'red':
-                    document.documentElement.style.setProperty('--primary-color', '#eb1f1f');
-                    document.documentElement.style.setProperty('--secondary-color', '#ff5858');
-                    break;
-                case 'yellow':
-                    document.documentElement.style.setProperty('--primary-color', '#ebb31f');
-                    document.documentElement.style.setProperty('--secondary-color', '#ffd758');
-                    break;
-                case 'white':
-                    document.documentElement.style.setProperty('--primary-color', '#d9d9d9');
-                    document.documentElement.style.setProperty('--secondary-color', '#ffffff');
-                    break;
-                case 'pink':
-                    document.documentElement.style.setProperty('--primary-color', '#eb1f6f');
-                    document.documentElement.style.setProperty('--secondary-color', '#ff58a6');
-                    break;
-            }
-            localStorage.setItem('theme', theme);
-        }
+    <div id="girlsModal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2>Выберите девушку</h2>
+            <div id="girlsGrid" class="girls-grid"></div>
+            <div class="order-actions">
+                <button id="confirmGirl" class="submit-btn">Далее</button>
+            </div>
+        </div>
+    </div>
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const themeOptions = document.querySelectorAll('.theme-options .option');
-            const languageOptions = document.querySelectorAll('.language-options .option');
-            const savedTheme = localStorage.getItem('theme') || 'blue';
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <h2 id="orderTitle">Оформление заказа</h2>
+            <div id="selectedGirl" class="selected-girl"></div>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="clientName">Ваше имя:</label>
+                    <input type="text" id="clientName" required>
+                </div>
+                <div class="form-group">
+                    <label for="clientPhone">Телефон:</label>
+                    <input type="tel" id="clientPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderDate">Дата и время:</label>
+                    <input type="datetime-local" id="orderDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="orderComment">Комментарий:</label>
+                    <textarea id="orderComment"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Подтвердить заказ</button>
+            </form>
+        </div>
+    </div>
 
-            setTheme(savedTheme);
-            themeOptions.forEach(opt => {
-                if (opt.getAttribute('data-theme') === savedTheme) opt.classList.add('active');
-            });
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close"><i class="fas fa-times"></i></span>
+            <div class="success-message">Отлично! Мы свяжемся с вами в ближайшее время.</div>
+        </div>
+    </div>
 
-            themeOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    themeOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    const theme = this.getAttribute('data-theme');
-                    setTheme(theme);
-                });
-            });
-
-            languageOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    languageOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    const lang = this.getAttribute('data-lang');
-                    console.log('Выбран язык:', lang);
-                });
-            });
-
-            document.querySelector('.option[data-lang="ru"]').classList.add('active');
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
