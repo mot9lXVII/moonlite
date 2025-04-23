@@ -15,20 +15,43 @@ logger = logging.getLogger(__name__)
 def init_db():
     with sqlite3.connect('orders.db') as conn:
         cursor = conn.cursor()
-        # Создаём таблицу users, если не существует
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                role TEXT DEFAULT 'user'
-            )
-        ''')
-        # Проверяем наличие столбцов и добавляем, если отсутствуют
+        # Проверяем текущую структуру таблицы users
         cursor.execute("PRAGMA table_info(users)")
         columns = [col[1] for col in cursor.fetchall()]
+
         if 'username' not in columns:
-            cursor.execute('ALTER TABLE users ADD COLUMN username TEXT NOT NULL UNIQUE')
+            # Создаём временную таблицу с правильной структурой
+            cursor.execute('''
+                CREATE TABLE users_temp (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL,
+                    role TEXT DEFAULT 'user'
+                )
+            ''')
+            # Копируем данные, присваивая временные username (например, user_<id>)
+            cursor.execute('SELECT id, password, role FROM users')
+            for row in cursor.fetchall():
+                temp_username = f"user_{row[0]}"  # Временный уникальный username
+                cursor.execute('INSERT INTO users_temp (id, username, password, role) VALUES (?, ?, ?, ?)',
+                              (row[0], temp_username, row[1], row[2] or 'user'))
+            # Удаляем старую таблицу и переименовываем временную
+            cursor.execute('DROP TABLE users')
+            cursor.execute('ALTER TABLE users_temp RENAME TO users')
+        else:
+            # Если username есть, создаём таблицу, если не существует
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL,
+                    role TEXT DEFAULT 'user'
+                )
+            ''')
+
+        # Проверяем остальные столбцы
+        cursor.execute("PRAGMA table_info(users)")
+        columns = [col[1] for col in cursor.fetchall()]
         if 'password' not in columns:
             cursor.execute('ALTER TABLE users ADD COLUMN password TEXT NOT NULL')
         if 'role' not in columns:
