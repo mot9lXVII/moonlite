@@ -1,43 +1,105 @@
 :root {
     --bg-color: #0d1117;
-    --text-color: #c9d1d9;
-    --primary-color: #1f6feb;
+    --text-color: #e6edf3;
+    --primary-color: #2f81f7;
     --secondary-color: #58a6ff;
     --border-color: #30363d;
     --muted-text: #8b949e;
-    --card-bg: rgba(22, 27, 34, 0.7);
-    --input-bg: rgba(13, 17, 23, 0.8);
+    --card-bg: rgba(22, 27, 34, 0.85);
+    --input-bg: rgba(13, 17, 23, 0.9);
     --input-border: rgba(255, 255, 255, 0.2);
 }
 
 body.light-theme {
-    --bg-color: #f0f2f5;
-    --text-color: #333;
-    --primary-color: #007bff;
-    --secondary-color: #66b0ff;
-    --border-color: #d1d5db;
-    --muted-text: #6b7280;
-    --card-bg: rgba(255, 255, 255, 0.9);
-    --input-bg: rgba(255, 255, 255, 0.8);
-    --input-border: rgba(0, 0, 0, 0.2);
+    --bg-color: #ffffff;
+    --text-color: #24292e;
+    --primary-color: #0366d6;
+    --secondary-color: #79c0ff;
+    --border-color: #d0d7de;
+    --muted-text: #57606a;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --input-bg: rgba(255, 255, 255, 0.9);
+    --input-border: rgba(0, 0, 0, 0.15);
 }
 
-/* Базовые стили */
+body.blue-theme {
+    --bg-color: #0a192f;
+    --text-color: #d1d5db;
+    --primary-color: #1e40af;
+    --secondary-color: #3b82f6;
+    --border-color: #1e3a8a;
+    --muted-text: #93c5fd;
+    --card-bg: rgba(30, 64, 175, 0.2);
+    --input-bg: rgba(30, 64, 175, 0.3);
+    --input-border: rgba(59, 130, 246, 0.3);
+}
+
+body.green-theme {
+    --bg-color: #052e16;
+    --text-color: #d1fae5;
+    --primary-color: #15803d;
+    --secondary-color: #34d399;
+    --border-color: #14532d;
+    --muted-text: #6ee7b7;
+    --card-bg: rgba(20, 83, 45, 0.2);
+    --input-bg: rgba(20, 83, 45, 0.3);
+    --input-border: rgba(52, 211, 153, 0.3);
+}
+
+body.red-theme {
+    --bg-color: #2e0a0a;
+    --text-color: #fee2e2;
+    --primary-color: #991b1b;
+    --secondary-color: #ef4444;
+    --border-color: #450a0a;
+    --muted-text: #f87171;
+    --card-bg: rgba(69, 10, 10, 0.2);
+    --input-bg: rgba(69, 10, 10, 0.3);
+    --input-border: rgba(239, 68, 68, 0.3);
+}
+
+body.purple-theme {
+    --bg-color: #1e0a3c;
+    --text-color: #ede9fe;
+    --primary-color: #6b21a8;
+    --secondary-color: #a855f7;
+    --border-color: #3b0764;
+    --muted-text: #c084fc;
+    --card-bg: rgba(59, 7, 100, 0.2);
+    --input-bg: rgba(59, 7, 100, 0.3);
+    --input-border: rgba(168, 85, 247, 0.3);
+}
+
 body {
-    background: linear-gradient(45deg, var(--bg-color), #1c2526, var(--bg-color));
+    background: linear-gradient(135deg, var(--bg-color), #1c2526, var(--bg-color));
     background-size: 200% 200%;
     animation: gradientShift 15s ease infinite;
     color: var(--text-color);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    overflow-y: auto;
-    position: relative;
+    overflow-x: hidden;
 }
 
 body.light-theme {
-    background: linear-gradient(45deg, var(--bg-color), #e5e7eb, var(--bg-color));
+    background: linear-gradient(135deg, var(--bg-color), #e5e7eb, var(--bg-color));
+}
+
+body.blue-theme {
+    background: linear-gradient(135deg, var(--bg-color), #1e3a8a, var(--bg-color));
+}
+
+body.green-theme {
+    background: linear-gradient(135deg, var(--bg-color), #14532d, var(--bg-color));
+}
+
+body.red-theme {
+    background: linear-gradient(135deg, var(--bg-color), #450a0a, var(--bg-color));
+}
+
+body.purple-theme {
+    background: linear-gradient(135deg, var(--bg-color), #3b0764, var(--bg-color));
 }
 
 @keyframes gradientShift {
@@ -46,7 +108,6 @@ body.light-theme {
     100% { background-position: 0% 50%; }
 }
 
-/* Частицы */
 #particles-js {
     position: fixed;
     top: 0;
@@ -56,7 +117,6 @@ body.light-theme {
     z-index: -1;
 }
 
-/* Хедер */
 .site-header {
     position: fixed;
     top: 0;
@@ -65,26 +125,23 @@ body.light-theme {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 40px;
+    padding: 15px 30px;
     background: var(--card-bg);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
     z-index: 1000;
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 900;
     color: var(--secondary-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
     text-decoration: none;
-    transition: color 0.3s ease, transform 0.3s ease;
+    transition: color 0.2s ease;
 }
 
 .logo:hover {
     color: var(--primary-color);
-    transform: translateY(-2px);
 }
 
 .main-nav {
@@ -97,23 +154,28 @@ body.light-theme {
     text-decoration: none;
     font-weight: 600;
     padding: 8px 12px;
-    transition: color 0.3s ease, transform 0.3s ease;
+    transition: color 0.2s ease;
 }
 
 .main-nav a:hover {
     color: var(--secondary-color);
-    transform: translateY(-2px);
 }
 
-/* Анимации */
+.nav-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes fadeOut {
@@ -121,89 +183,55 @@ body.light-theme {
     to { opacity: 0; }
 }
 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-10px); }
-    50% { transform: translateX(10px); }
-    75% { transform: translateX(-5px); }
-}
-
-@keyframes slideIn {
-    from { transform: translateY(100px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
 .fade-in {
     animation: fadeIn 0.5s ease-out forwards;
 }
 
 .fade-out {
-    animation: fadeOut 0.5s ease-out forwards;
+    animation: fadeOut 0.3s ease-out forwards;
 }
 
-/* Приветственная надпись */
 .welcome-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transform-style: preserve-3d;
-    width: 100%;
     text-align: center;
     z-index: 10;
 }
 
 .welcome-message {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: linear-gradient(90deg, var(--secondary-color), #ff6bcb, var(--secondary-color));
-    background-size: 200%;
+    background: linear-gradient(90deg, var(--secondary-color), #ff6bcb);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: gradientText 5s ease infinite;
-    text-shadow: 0 0 20px rgba(88, 166, 255, 0.5);
-    padding: 20px;
-    border-radius: 15px;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 1s ease-out forwards;
-    margin: 0 auto;
+    text-shadow: 0 2px 10px rgba(88, 166, 255, 0.3);
+    padding: 15px;
+    animation: slideIn 1s ease-out forwards;
     max-width: 90%;
     cursor: pointer;
 }
 
-@keyframes gradientText {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Контент страниц */
 .content-container {
-    margin: 80px auto 40px;
+    margin: 100px auto 40px;
     padding: 0 20px;
-    width: 100%;
-    max-width: 1200px;
+    max-width: 1280px;
     text-align: center;
-    z-index: 10;
 }
 
 .page-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: 900;
     color: var(--secondary-color);
     margin-bottom: 30px;
-    opacity: 0;
-    animation: fadeInUp 0.8s ease-out 0.3s forwards;
+    animation: slideIn 0.8s ease-out forwards;
 }
 
-/* Сетка карточек */
 .girls-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
     margin-top: 20px;
 }
@@ -211,111 +239,48 @@ body.light-theme {
 .girl-card {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 15px;
     border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-    opacity: 0;
-    animation: fadeInUp 0.8s ease-out forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-.girl-card:nth-child(1) { animation-delay: 0.4s; }
-.girl-card:nth-child(2) { animation-delay: 0.5s; }
-.girl-card:nth-child(3) { animation-delay: 0.6s; }
-.girl-card:nth-child(4) { animation-delay: 0.7s; }
-.girl-card:nth-child(5) { animation-delay: 0.8s; }
 
 .girl-card:hover {
     transform: translateY(-5px);
-    border-color: var(--secondary-color);
-    box-shadow: 0 8px 24px rgba(31, 111, 235, 0.3);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .girl-card.selected {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 15px rgba(88, 166, 255, 0.5);
+    border: 2px solid var(--secondary-color);
 }
 
 .girl-photo {
     width: 100%;
-    height: 180px;
+    height: 200px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
 }
 
 .girl-name {
-    color: var(--secondary-color);
     font-size: 1.2rem;
-    margin-bottom: 5px;
+    font-weight: 700;
+    margin: 10px 0 5px;
+    color: var(--secondary-color);
 }
 
 .girl-details {
-    color: var(--muted-text);
     font-size: 0.9rem;
-    margin-bottom: 5px;
+    color: var(--muted-text);
+    margin: 5px 0;
 }
 
 .girl-note {
-    color: var(--muted-text);
-    font-size: 0.9rem;
-}
-
-/* Отзывы */
-.reviews-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.review-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-    opacity: 0;
-    animation: fadeInUp 0.8s ease-out forwards;
-}
-
-.review-card:nth-child(1) { animation-delay: 0.4s; }
-.review-card:nth-child(2) { animation-delay: 0.5s; }
-.review-card:nth-child(3) { animation-delay: 0.6s; }
-
-.review-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--secondary-color);
-    box-shadow: 0 8px 24px rgba(31, 111, 235, 0.3);
-}
-
-.review-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.review-content {
-    flex: 1;
-}
-
-.review-name {
-    color: var(--secondary-color);
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-}
-
-.review-text {
-    color: var(--muted-text);
     font-size: 0.85rem;
+    color: var(--muted-text);
+    line-height: 1.4;
 }
 
-/* Модальные окна */
 .modal {
     display: none;
     position: fixed;
@@ -323,109 +288,68 @@ body.light-theme {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
     overflow: auto;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-body.light-theme .modal {
-    background: rgba(0, 0, 0, 0.6);
 }
 
 .modal.show {
     display: block;
-    opacity: 1;
+    animation: fadeIn 0.3s ease-out;
 }
 
 .modal-content {
     background: var(--card-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid var(--border-color);
-    margin: 10% auto;
-    padding: 20px;
     border-radius: 12px;
-    width: 90%;
-    max-width: 700px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 5% auto;
     position: relative;
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.5s ease-out;
 }
 
-.modal.show .modal-content {
-    transform: scale(1);
+.modal-content.telegram-chat {
+    max-width: 400px;
 }
 
 .close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 28px;
-    height: 28px;
-    background: var(--input-bg);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
+    top: 15px;
+    right: 15px;
+    font-size: 1.5rem;
+    color: var(--muted-text);
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: color 0.2s ease;
 }
 
 .close:hover {
-    background: var(--secondary-color);
+    color: var(--secondary-color);
 }
 
-/* Улучшенная модалка заказа */
-.selected-girl {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: var(--card-bg);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.selected-girl img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.selected-girl .girl-name {
-    font-size: 1.3rem;
-}
-
-.order-actions {
-    margin-top: 15px;
-    text-align: right;
-}
-
-/* Форма заказа */
 .form-group {
     margin-bottom: 15px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 6px;
-    color: var(--secondary-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-color);
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: 10px;
-    background: var(--input-bg);
     border: 1px solid var(--input-border);
     border-radius: 6px;
+    background: var(--input-bg);
     color: var(--text-color);
-    font-size: 0.9rem;
-    transition: border-color 0.3s ease;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
 }
 
 .form-group input:focus,
@@ -435,249 +359,135 @@ body.light-theme .modal {
 }
 
 .form-group textarea {
-    min-height: 80px;
     resize: vertical;
+    min-height: 80px;
 }
 
 .submit-btn {
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    color: white;
+    background: var(--primary-color);
+    color: var(--text-color);
+    padding: 10px 20px;
     border: none;
-    padding: 12px;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    width: 100%;
-    font-size: 1rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: background 0.2s ease;
 }
 
 .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(31, 111, 235, 0.4);
+    background: var(--secondary-color);
 }
 
-/* Настройки */
-.settings-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.order-actions {
     text-align: center;
-    z-index: 10;
-    opacity: 0;
-    animation: slideIn 0.8s ease-out 0.3s forwards;
+    margin-top: 20px;
 }
 
-.settings-container h2 {
+.selected-girl {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.selected-girl img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.success-message {
+    font-size: 1.2rem;
+    font-weight: 600;
     color: var(--secondary-color);
-    margin-bottom: 12px;
+    text-align: center;
+}
+
+/* Плавающая иконка Telegram */
+.telegram-chat-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--secondary-color);
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.8rem;
-}
-
-#themeSelect {
-    padding: 10px 18px;
-    font-size: 1rem;
-    background: var(--input-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    color: var(--text-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 180px;
+    z-index: 1000;
+    transition: transform 0.2s ease, background 0.2s ease;
 }
 
-#themeSelect:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(88, 166, 255, 0.2);
+.telegram-chat-btn:hover {
+    background: var(--primary-color);
+    transform: scale(1.1);
 }
 
-#themeSelect:focus {
-    border-color: var(--secondary-color);
-    outline: none;
-}
-
-/* Адаптация для планшетов */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .site-header {
-        padding: 12px 20px;
-    }
-
-    .logo {
-        font-size: 1.5rem;
+        padding: 15px 20px;
     }
 
     .main-nav {
-        gap: 15px;
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        flex-direction: column;
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .main-nav.active {
+        display: flex;
     }
 
     .main-nav a {
-        padding: 6px 10px;
-        font-size: 0.95rem;
+        padding: 10px;
+        font-size: 1.1rem;
     }
 
-    .welcome-message {
-        font-size: 2.5rem;
-        padding: 15px;
-    }
-
-    .page-title {
-        font-size: 2rem;
-    }
-
-    .girls-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 15px;
-    }
-
-    .girl-photo {
-        height: 150px;
-    }
-
-    .review-avatar {
-        width: 60px;
-        height: 60px;
-    }
-
-    .modal-content {
-        max-width: 600px;
-        padding: 15px;
-    }
-
-    .selected-girl img {
-        width: 70px;
-        height: 70px;
-    }
-
-    .settings-container h2 {
-        font-size: 1.6rem;
-    }
-
-    #themeSelect {
-        width: 90%;
-        max-width: 250px;
-    }
-}
-
-/* Адаптация для телефонов */
-@media (max-width: 600px) {
-    .site-header {
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px 15px;
-    }
-
-    .logo {
-        font-size: 1.3rem;
-    }
-
-    .main-nav {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .main-nav a {
-        padding: 8px 15px;
-        font-size: 1rem;
+    .nav-toggle {
+        display: block;
     }
 
     .welcome-message {
         font-size: 1.8rem;
-        line-height: 1.3;
-        padding: 10px;
     }
 
-    .page-title {
-        font-size: 1.6rem;
-        margin-bottom: 20px;
-    }
-
-    .content-container {
-        margin-top: 120px;
+    .modal-content {
+        margin: 10% 15px;
+        padding: 15px;
     }
 
     .girls-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
+    }
+
+    .telegram-chat-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .welcome-message {
+        font-size: 1.5rem;
     }
 
     .girl-photo {
-        height: 130px;
-    }
-
-    .girl-name {
-        font-size: 1.1rem;
-    }
-
-    .girl-details,
-    .girl-note {
-        font-size: 0.8rem;
-    }
-
-    .review-card {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 10px;
-    }
-
-    .review-avatar {
-        width: 50px;
-        height: 50px;
-    }
-
-    .review-name {
-        font-size: 1rem;
-    }
-
-    .review-text {
-        font-size: 0.8rem;
-    }
-
-    .modal-content {
-        margin: 20% auto;
-        padding: 12px;
-        max-width: 90%;
-    }
-
-    .selected-girl {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .selected-girl img {
-        width: 60px;
-        height: 60px;
-    }
-
-    .selected-girl .girl-name {
-        font-size: 1.1rem;
-    }
-
-    .form-group input,
-    .form-group textarea {
-        padding: 8px;
-        font-size: 0.85rem;
-    }
-
-    .submit-btn {
-        padding: 10px;
-        font-size: 0.9rem;
-    }
-
-    .settings-container {
-        top: 50%;
-    }
-
-    .settings-container h2 {
-        font-size: 1.4rem;
-    }
-
-    #themeSelect {
-        width: 100%;
-        max-width: 300px;
-        padding: 8px 15px;
+        height: 180px;
     }
 }
