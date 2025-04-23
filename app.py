@@ -1,19 +1,13 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from flask_cors import CORS
 import sqlite3
-import os
-from telegram import Bot
-from telegram.ext import Application, CommandHandler, ContextTypes
-import asyncio
+import bcrypt
 import logging
-import requests
+import os
 
 app = Flask(__name__)
 CORS(app)
-
-# Настройки Telegram
-TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '7289784871:AAGq3ff8VJXvR4Q8cbewCJIJYpdbJJofoEI')
-telegram_bot = Bot(token=TELEGRAM_BOT_TOKEN)
+app.secret_key = os.getenv('SECRET_KEY', 'super-secret-key')  # Для сессий
 
 # Настройка логирования
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -23,92 +17,64 @@ logger = logging.getLogger(__name__)
 def init_db():
     with sqlite3.connect('orders.db') as conn:
         cursor = conn.cursor()
+        # Таблица пользователей
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
+                role TEXT DEFAULT 'user'
+            )
+        ''')
+        # Таблица заказов
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
                 name TEXT NOT NULL,
-                telegram_username TEXT NOT NULL,
-                telegram_id TEXT,
                 girl TEXT,
                 date TEXT NOT NULL,
                 comment TEXT,
-                status TEXT DEFAULT 'pending'
+                status TEXT DEFAULT 'pending',
+                FOREIGN KEY (username) REFERENCES users (username)
             )
         ''')
+        # Таблица сообщений чата поддержки
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                telegram_id TEXT PRIMARY KEY,
-                telegram_username TEXT NOT NULL,
-                name TEXT
+            CREATE TABLE IF NOT EXISTS support_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                message TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                is_admin_reply BOOLEAN DEFAULT FALSE
             )
         ''')
         conn.commit()
+
+        # Создаём админа mot9lXVII
+        admin_username = 'mot9lXVII'
+        admin_password = '1337motya'.encode('utf-8')
+        hashed_password = bcrypt.hashpw(admin_password, bcrypt.gensalt())
+        try:
+            cursor.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+                          (admin_username, hashed_password, 'admin'))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            pass  # Админ уже существует
 
 init_db()
 
-# Получение Telegram ID по username
-def get_telegram_id(username):
-    try:
-        response = requests.get(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getChat?chat_id={username}")
-        result = response.json()
-        if result.get('ok'):
-            return str(result['result']['id'])
-        return None
-    except Exception as e:
-        logger.error(f"Error getting Telegram ID for {username}: {e}")
-        return None
+# Проверка авторизации
+def is_authenticated():
+    return 'username' in session
 
-# Telegram: обработка команды /start
-async def start(update, context: ContextTypes.DEFAULT_TYPE):
-    telegram_id = str(update.effective_user.id)
-    username = update.effective_user.username or "Unknown"
-    
-    # Сохраняем пользователя в базе
-    with sqlite3.connect('orders.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('INSERT OR REPLACE INTO users (telegram_id, telegram_username) VALUES (?, ?)', 
-                      (telegram_id, f"@{username}"))
-        conn.commit()
-
-    # Получаем заказы пользователя
-    with sqlite3.connect('orders.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT girl, date, status FROM orders WHERE telegram_id = ? OR telegram_username = ?', 
-                      (telegram_id, f"@{username}"))
-        orders = cursor.fetchall()
-
-    if orders:
-        message = "Ваши активные заказы:\n" + "\n".join([f"👧 {order[0]} на {order[1]} (Статус: {order[2]})" for order in orders])
-    else:
-        message = "У вас пока нет заказов. Оформите заказ на сайте!"
-    
-    await update.message.reply_text(message)
-
-# Инициализация Telegram бота
-async def setup_bot():
-    application = await Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    application.add_handler(CommandHandler("start", start))
-    await application.initialize()
-    await application.start()
-    await application.updater.start_polling()
-    return application
-
-# Запускаем бота в отдельном потоке
-loop = asyncio.get_event_loop()
-loop.create_task(setup_bot())
-
-# Отправка уведомления в Telegram
-async def send_telegram_message(telegram_id, message):
-    try:
-        await telegram_bot.send_message(chat_id=telegram_id, text=message)
-        return True
-    except Exception as e:
-        logger.error(f"Error sending Telegram message: {e}")
-        return False
+# Проверка роли админа
+def is_admin():
+    return is_authenticated() and session.get('role') == 'admin'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', authenticated=is_authenticated(), is_admin=is_admin())
 
 @app.route('/girls')
 def girls():
@@ -134,51 +100,131 @@ def workers():
 def settings():
     return render_template('settings.html')
 
+@app.route('/register', methods=['POST'])
+def register():
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+
+        if not username or not password:
+            return jsonify({'status': 'error', 'message': 'Введите имя пользователя и пароль'}), 400
+
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        with sqlite3.connect('orders.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+                          (username, hashed_password, 'user'))
+            conn.commit()
+        return jsonify({'status': 'success', 'message': 'Регистрация успешна! Войдите в аккаунт.'})
+    except sqlite3.IntegrityError:
+        return jsonify({'status': 'error', 'message': 'Имя пользователя уже занято'}), 400
+    except Exception as e:
+        logger.error(f"Register error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+
+        with sqlite3.connect('orders.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT password, role FROM users WHERE username = ?', (username,))
+            user = cursor.fetchone()
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user[0]):
+            session['username'] = username
+            session['role'] = user[1]
+            return jsonify({'status': 'success', 'message': 'Вход успешен!'})
+        return jsonify({'status': 'error', 'message': 'Неверное имя пользователя или пароль'}), 401
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('username', None)
+    session.pop('role', None)
+    return jsonify({'status': 'success', 'message': 'Выход успешен'})
+
 @app.route('/order', methods=['POST'])
 def order():
+    if not is_authenticated():
+        return jsonify({'status': 'error', 'message': 'Авторизуйтесь для оформления заказа'}), 401
     try:
         data = request.get_json()
         girl = data.get('girl')
         name = data.get('name')
-        telegram_username = data.get('telegram_username')
         date = data.get('date')
         comment = data.get('comment')
+        username = session['username']
 
-        if not telegram_username.startswith('@'):
-            telegram_username = f"@{telegram_username}"
-
-        # Получаем Telegram ID
-        telegram_id = get_telegram_id(telegram_username)
-
-        # Сохраняем заказ в базе
         with sqlite3.connect('orders.db') as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO orders (name, telegram_username, telegram_id, girl, date, comment, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (name, telegram_username, telegram_id, girl, date, comment, 'pending'))
+                INSERT INTO orders (username, name, girl, date, comment, status)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (username, name, girl, date, comment, 'pending'))
             conn.commit()
 
-        # Обновляем данные пользователя
-        if telegram_id:
-            with sqlite3.connect('orders.db') as conn:
-                cursor = conn.cursor()
-                cursor.execute('INSERT OR REPLACE INTO users (telegram_id, telegram_username, name) VALUES (?, ?, ?)', 
-                             (telegram_id, telegram_username, name))
-                conn.commit()
-
-        # Отправляем уведомление в Telegram, если диалог начат
-        message = f"Здравствуйте, {name}! Ваш заказ на {date} ({girl}) успешно принят. Статус: pending"
-        if telegram_id:
-            success = asyncio.run(send_telegram_message(telegram_id, message))
-            if success:
-                return jsonify({'status': 'success', 'message': 'Заказ принят! Проверьте Telegram.'})
-            else:
-                return jsonify({'status': 'success', 'message': 'Заказ принят. Напишите /start боту, чтобы получить уведомления.'})
-        return jsonify({'status': 'success', 'message': 'Заказ принят. Напишите /start боту, чтобы получить уведомления.'})
-
+        return jsonify({'status': 'success', 'message': 'Заказ принят!'})
     except Exception as e:
         logger.error(f"Order error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@app.route('/orders', methods=['GET'])
+def get_orders():
+    if not is_authenticated():
+        return jsonify({'status': 'error', 'message': 'Авторизуйтесь для просмотра заказов'}), 401
+    try:
+        with sqlite3.connect('orders.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT girl, date, status FROM orders WHERE username = ?',
+                          (session['username'],))
+            orders = cursor.fetchall()
+        return jsonify({'status': 'success', 'orders': [{'girl': o[0], 'date': o[1], 'status': o[2]} for o in orders]})
+    except Exception as e:
+        logger.error(f"Get orders error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@app.route('/support', methods=['POST'])
+def send_support_message():
+    if not is_authenticated():
+        return jsonify({'status': 'error', 'message': 'Авторизуйтесь для отправки сообщения'}), 401
+    try:
+        data = request.get_json()
+        message = data.get('message')
+        is_admin_reply = is_admin()
+
+        with sqlite3.connect('orders.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO support_messages (username, message, is_admin_reply) VALUES (?, ?, ?)',
+                          (session['username'], message, is_admin_reply))
+            conn.commit()
+        return jsonify({'status': 'success', 'message': 'Сообщение отправлено'})
+    except Exception as e:
+        logger.error(f"Support message error: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+
+@app.route('/support', methods=['GET'])
+def get_support_messages():
+    if not is_authenticated():
+        return jsonify({'status': 'error', 'message': 'Авторизуйтесь для просмотра чата'}), 401
+    try:
+        with sqlite3.connect('orders.db') as conn:
+            cursor = conn.cursor()
+            if is_admin():
+                cursor.execute('SELECT username, message, timestamp, is_admin_reply FROM support_messages ORDER BY timestamp')
+            else:
+                cursor.execute('SELECT username, message, timestamp, is_admin_reply FROM support_messages WHERE username = ? OR is_admin_reply = 1 ORDER BY timestamp',
+                              (session['username'],))
+            messages = cursor.fetchall()
+        return jsonify({'status': 'success', 'messages': [{'username': m[0], 'message': m[1], 'timestamp': m[2], 'is_admin_reply': m[3]} for m in messages]})
+    except Exception as e:
+        logger.error(f"Get support messages error: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 if __name__ == '__main__':

@@ -10,17 +10,35 @@ const selectors = {
     girlsModal: '#girlsModal',
     orderModal: '#orderModal',
     successModal: '#successModal',
-    telegramModal: '#telegramModal',
-    telegramChatBtn: '#telegramChatBtn',
+    accountModal: '#accountModal',
+    avatarBtn: '#avatarBtn',
     girlsGrid: '#girlsGrid',
     orderForm: '#orderForm',
+    loginForm: '#loginForm',
+    registerForm: '#registerForm',
+    chatForm: '#chatForm',
+    adminChatForm: '#adminChatForm',
     orderTitle: '#orderTitle',
     selectedGirl: '#selectedGirl',
     confirmGirl: '#confirmGirl',
     close: '.close',
     themeSelect: '#themeSelect',
     welcomeMessage: '#welcomeMessage',
-    navToggle: '#navToggle'
+    navToggle: '#navToggle',
+    authSection: '#authSection',
+    registerSection: '#registerSection',
+    accountSection: '#accountSection',
+    showRegister: '#showRegister',
+    showLogin: '#showLogin',
+    logoutBtn: '#logoutBtn',
+    ordersBtn: '#ordersBtn',
+    accountUsername: '#accountUsername',
+    ordersList: '#ordersList',
+    chatMessages: '#chatMessages',
+    adminSupport: '#adminSupport',
+    adminChatMessages: '#adminChatMessages',
+    chatMessage: '#chatMessage',
+    adminChatMessage: '#adminChatMessage'
 };
 
 const elements = {};
@@ -29,17 +47,22 @@ Object.keys(selectors).forEach(key => {
 });
 
 let selectedGirl = null;
+let currentUser = null;
 
+// Валидация
 function validateUsername(username) {
-    return username.match(/^@?[A-Za-z0-9_]{5,}$/);
+    return /^[A-Za-z0-9_]{3,}$/.test(username);
+}
+
+function validatePassword(password) {
+    return password.length >= 6;
 }
 
 function validateDate(date) {
-    const selectedDate = new Date(date);
-    const now = new Date();
-    return selectedDate > now;
+    return new Date(date) > new Date();
 }
 
+// Управление модальными окнами
 function showModal(modal) {
     modal.style.display = 'block';
     setTimeout(() => modal.classList.add('show'), 10);
@@ -50,14 +73,41 @@ function hideModal(modal, callback) {
     modal.classList.remove('show');
     setTimeout(() => {
         modal.style.display = 'none';
-        if (callback) callback();
         document.body.style.overflow = 'auto';
+        if (callback) callback();
     }, 300);
 }
 
+function closeAllModals() {
+    [elements.girlsModal, elements.orderModal, elements.successModal, elements.accountModal]
+        .filter(modal => modal?.style.display === 'block')
+        .forEach(modal => hideModal(modal));
+}
+
+// Модальное окно выбора девушек
 function showGirlsModal() {
     fillGirlsGrid();
     showModal(elements.girlsModal);
+}
+
+function fillGirlsGrid() {
+    elements.girlsGrid.innerHTML = '';
+    girlsData.forEach(girl => {
+        const card = document.createElement('div');
+        card.className = 'girl-card';
+        card.innerHTML = `
+            <img src="/static/images/${girl.image}" alt="${girl.name}" class="girl-photo" loading="lazy">
+            <h3 class="girl-name">${girl.name}</h3>
+            <p class="girl-details">${girl.age} лет, ${girl.height} см</p>
+            <p class="girl-note">${girl.description}</p>
+        `;
+        card.addEventListener('click', () => {
+            selectedGirl = girl;
+            document.querySelectorAll('.girl-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        });
+        elements.girlsGrid.appendChild(card);
+    });
 }
 
 function showOrderForm(girl) {
@@ -74,33 +124,77 @@ function showOrderForm(girl) {
     hideModal(elements.girlsModal, () => showModal(elements.orderModal));
 }
 
-function closeModals() {
-    [elements.girlsModal, elements.orderModal, elements.successModal, elements.telegramModal].forEach(modal => {
-        if (modal?.style.display === 'block') hideModal(modal);
-    });
+// Личный кабинет и авторизация
+function showAuthSection() {
+    elements.authSection.style.display = 'block';
+    elements.registerSection.style.display = 'none';
+    elements.accountSection.style.display = 'none';
+    showModal(elements.accountModal);
 }
 
-function fillGirlsGrid() {
-    elements.girlsGrid.innerHTML = '';
-    girlsData.forEach(girl => {
-        const girlCard = document.createElement('div');
-        girlCard.className = 'girl-card';
-        girlCard.innerHTML = `
-            <img src="/static/images/${girl.image}" alt="${girl.name}" class="girl-photo" loading="lazy">
-            <h3 class="girl-name">${girl.name}</h3>
-            <p class="girl-details">${girl.age} лет, ${girl.height} см</p>
-            <p class="girl-note">${girl.description}</p>
-        `;
-        girlCard.addEventListener('click', () => {
-            selectedGirl = girl;
-            document.querySelectorAll('.girl-card').forEach(card => card.classList.remove('selected'));
-            girlCard.classList.add('selected');
-        });
-        elements.girlsGrid.appendChild(girlCard);
-    });
+function showRegisterSection() {
+    elements.authSection.style.display = 'none';
+    elements.registerSection.style.display = 'block';
+    elements.accountSection.style.display = 'none';
+    showModal(elements.accountModal);
 }
 
+function showAccountSection(username, isAdmin) {
+    elements.authSection.style.display = 'none';
+    elements.registerSection.style.display = 'none';
+    elements.accountSection.style.display = 'block';
+    elements.accountUsername.textContent = username;
+    elements.adminSupport.style.display = isAdmin ? 'block' : 'none';
+    loadSupportMessages(isAdmin);
+    showModal(elements.accountModal);
+}
+
+// Загрузка заказов
+async function loadOrders() {
+    try {
+        const response = await fetch('/orders');
+        const data = await response.json();
+        if (data.status === 'success') {
+            elements.ordersList.innerHTML = data.orders.length
+                ? data.orders.map(order => `
+                    <p>👧 ${order.girl} на ${order.date} (Статус: ${order.status})</p>
+                `).join('')
+                : '<p>У вас нет активных заказов.</p>';
+        } else {
+            alert(data.message);
+        }
+    } catch (error) {
+        alert('Ошибка загрузки заказов');
+    }
+}
+
+// Загрузка сообщений чата поддержки
+async function loadSupportMessages(isAdmin) {
+    try {
+        const response = await fetch('/support');
+        const data = await response.json();
+        if (data.status === 'success') {
+            const messages = data.messages.map(msg => `
+                <div style="margin-bottom: 10px;">
+                    <strong>${msg.is_admin_reply ? 'Админ' : msg.username}</strong> (${msg.timestamp}):
+                    <p>${msg.message}</p>
+                </div>
+            `).join('');
+            elements.chatMessages.innerHTML = messages;
+            elements.adminChatMessages.innerHTML = messages;
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            elements.adminChatMessages.scrollTop = elements.adminChatMessages.scrollHeight;
+        } else {
+            alert(data.message);
+        }
+    } catch (error) {
+        alert('Ошибка загрузки сообщений');
+    }
+}
+
+// Инициализация страницы
 document.addEventListener('DOMContentLoaded', () => {
+    // Темы
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.body.classList.add(`${savedTheme}-theme`);
     if (elements.themeSelect) {
@@ -113,103 +207,228 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (elements.orderBtn) {
-        elements.orderBtn.addEventListener('click', e => {
-            e.preventDefault();
-            showGirlsModal();
-        });
-    }
+    // Кнопка заказа
+    elements.orderBtn?.addEventListener('click', e => {
+        e.preventDefault();
+        showGirlsModal();
+    });
 
-    elements.close?.forEach(btn => btn.addEventListener('click', closeModals));
-
+    // Закрытие модалок
+    elements.close?.forEach(btn => btn.addEventListener('click', closeAllModals));
     window.addEventListener('click', e => {
-        if ([elements.girlsModal, elements.orderModal, elements.successModal, elements.telegramModal].includes(e.target)) {
-            closeModals();
+        if ([elements.girlsModal, elements.orderModal, elements.successModal, elements.accountModal].includes(e.target)) {
+            closeAllModals();
         }
     });
 
-    if (elements.navToggle) {
-        elements.navToggle.addEventListener('click', () => {
-            document.querySelector('.main-nav').classList.toggle('active');
-        });
-    }
+    // Бургер-меню
+    elements.navToggle?.addEventListener('click', () => {
+        document.querySelector('.main-nav').classList.toggle('active');
+    });
 
+    // Плавная навигация
     document.querySelectorAll('[data-smooth-navigate]').forEach(link => {
         link.addEventListener('click', e => {
             e.preventDefault();
             document.body.classList.add('fade-out');
-            setTimeout(() => {
-                window.location.href = link.getAttribute('href');
-            }, 300);
+            setTimeout(() => window.location.href = link.getAttribute('href'), 300);
         });
     });
 
-    if (elements.telegramChatBtn) {
-        elements.telegramChatBtn.addEventListener('click', () => {
-            showModal(elements.telegramModal);
-        });
-    }
+    // Выбор девушки
+    elements.confirmGirl?.addEventListener('click', () => {
+        if (selectedGirl) showOrderForm(selectedGirl);
+    });
 
-    if (elements.girlsGrid) {
-        fillGirlsGrid();
-    }
-
-    if (elements.confirmGirl) {
-        elements.confirmGirl.addEventListener('click', () => {
-            if (selectedGirl) {
-                showOrderForm(selectedGirl);
+    // Открытие личного кабинета
+    elements.avatarBtn?.addEventListener('click', async () => {
+        try {
+            const response = await fetch('/orders');
+            const data = await response.json();
+            if (data.status === 'success') {
+                showAccountSection(currentUser || 'Пользователь', elements.adminSupport.style.display === 'block');
+            } else {
+                showAuthSection();
             }
-        });
-    }
+        } catch (error) {
+            showAuthSection();
+        }
+    });
 
-    if (elements.orderForm) {
-        elements.orderForm.addEventListener('submit', async e => {
-            e.preventDefault();
-            const name = document.getElementById('clientName').value.trim();
-            let telegram_username = document.getElementById('telegramUsername').value.trim();
-            const date = document.getElementById('orderDate').value;
-            const comment = document.getElementById('orderComment').value.trim();
+    // Вход
+    elements.loginForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
 
-            if (!name) return alert('Введите ваше имя');
-            if (!validateUsername(telegram_username)) return alert('Введите корректный Telegram username (например, @Username)');
-            if (!validateDate(date)) return alert('Выберите дату и время в будущем');
+        if (!validateUsername(username)) return alert('Имя пользователя: минимум 3 символа, только буквы, цифры, подчёркивания');
+        if (!validatePassword(password)) return alert('Пароль: минимум 6 символов');
 
-            if (!telegram_username.startsWith('@')) {
-                telegram_username = `@${telegram_username}`;
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                currentUser = username;
+                showAccountSection(username, data.role === 'admin');
+            } else {
+                alert(data.message);
             }
+        } catch (error) {
+            alert('Ошибка входа');
+        }
+    });
 
-            const formData = { girl: selectedGirl?.name, name, telegram_username, date, comment };
+    // Регистрация
+    elements.registerForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const username = document.getElementById('registerUsername').value.trim();
+        const password = document.getElementById('registerPassword').value.trim();
 
-            try {
-                const response = await fetch('/order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+        if (!validateUsername(username)) return alert('Имя пользователя: минимум 3 символа, только буквы, цифры, подчёркивания');
+        if (!validatePassword(password)) return alert('Пароль: минимум 6 символов');
+
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                alert(data.message);
+                showAuthSection();
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert('Ошибка регистрации');
+        }
+    });
+
+    // Переключение между входом и регистрацией
+    elements.showRegister?.addEventListener('click', e => {
+        e.preventDefault();
+        showRegisterSection();
+    });
+
+    elements.showLogin?.addEventListener('click', e => {
+        e.preventDefault();
+        showAuthSection();
+    });
+
+    // Выход
+    elements.logoutBtn?.addEventListener('click', async () => {
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                currentUser = null;
+                closeAllModals();
+                alert(data.message);
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert('Ошибка выхода');
+        }
+    });
+
+    // Загрузка заказов
+    elements.ordersBtn?.addEventListener('click', loadOrders);
+
+    // Отправка сообщений в чат
+    elements.chatForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const message = elements.chatMessage.value.trim();
+        if (!message) return;
+
+        try {
+            const response = await fetch('/support', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                elements.chatMessage.value = '';
+                loadSupportMessages(elements.adminSupport.style.display === 'block');
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert('Ошибка отправки сообщения');
+        }
+    });
+
+    // Отправка админ-сообщений
+    elements.adminChatForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const message = elements.adminChatMessage.value.trim();
+        if (!message) return;
+
+        try {
+            const response = await fetch('/support', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                elements.adminChatMessage.value = '';
+                loadSupportMessages(true);
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            alert('Ошибка отправки сообщения');
+        }
+    });
+
+    // Оформление заказа
+    elements.orderForm?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = document.getElementById('clientName').value.trim();
+        const date = document.getElementById('orderDate').value;
+        const comment = document.getElementById('orderComment').value.trim();
+
+        if (!name) return alert('Введите ваше имя');
+        if (!validateDate(date)) return alert('Выберите дату и время в будущем');
+
+        const formData = { girl: selectedGirl?.name, name, date, comment };
+
+        try {
+            const response = await fetch('/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                hideModal(elements.orderModal, () => {
+                    showModal(elements.successModal);
+                    elements.successModal.querySelector('.success-message').textContent = data.message;
+                    setTimeout(() => hideModal(elements.successModal), 3000);
                 });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    hideModal(elements.orderModal, () => {
-                        showModal(elements.successModal);
-                        elements.successModal.querySelector('.success-message').textContent = result.message;
-                        setTimeout(() => {
-                            hideModal(elements.successModal);
-                            showModal(elements.telegramModal);
-                        }, 3000);
-                    });
-                    elements.orderForm.reset();
-                    elements.selectedGirl.innerHTML = '';
-                    selectedGirl = null;
-                } else {
-                    alert(result.message);
-                }
-            } catch (error) {
-                alert('Ошибка при отправке заказа');
+                elements.orderForm.reset();
+                elements.selectedGirl.innerHTML = '';
+                selectedGirl = null;
+            } else {
+                alert(data.message);
             }
-        });
-    }
+        } catch (error) {
+            alert('Ошибка при отправке заказа');
+        }
+    });
 
-    const isMobile = window.innerWidth <= 600;
-    if (!isMobile) {
+    // Particles.js для десктопа
+    if (window.innerWidth > 600) {
         particlesJS('particles-js', {
             particles: {
                 number: { value: 60, density: { enable: true, value_area: 800 } },

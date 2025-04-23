@@ -22,16 +22,14 @@
             <a href="/workers" data-smooth-navigate>Работники</a>
             <a href="/settings" data-smooth-navigate>Настройки</a>
             <a href="#" id="orderBtn">Заказать</a>
+            <div class="avatar" id="avatarBtn">
+                <i class="fas fa-user"></i>
+            </div>
         </nav>
     </header>
 
     <div class="welcome-container">
         <div class="welcome-message" id="welcomeMessage">Добро пожаловать на Услуги Эскорта Ивацевичи!</div>
-    </div>
-
-    <!-- Плавающая иконка для открытия Telegram-чата -->
-    <div class="telegram-chat-btn" id="telegramChatBtn">
-        <i class="fab fa-telegram-plane"></i>
     </div>
 
     <div id="girlsModal" class="modal">
@@ -56,10 +54,6 @@
                     <input type="text" id="clientName" required>
                 </div>
                 <div class="form-group">
-                    <label for="telegramUsername">Ваш Telegram username (@Username):</label>
-                    <input type="text" id="telegramUsername" placeholder="@Username" required>
-                </div>
-                <div class="form-group">
                     <label for="orderDate">Дата и время:</label>
                     <input type="datetime-local" id="orderDate" required>
                 </div>
@@ -79,13 +73,61 @@
         </div>
     </div>
 
-    <div id="telegramModal" class="modal">
-        <div class="modal-content telegram-chat">
+    <div id="accountModal" class="modal">
+        <div class="modal-content account-modal">
             <span class="close"><i class="fas fa-times"></i></span>
-            <h2>Чат с ботом</h2>
-            <p>Напишите <strong>/start</strong>, чтобы получить информацию о ваших заказах.</p>
-            <div id="telegramChat" style="height: 400px; border: 1px solid var(--border-color); border-radius: 8px;">
-                <iframe src="https://t.me/orders1337bot?start" style="width: 100%; height: 100%; border: none;"></iframe>
+            <div id="authSection" style="display: none;">
+                <h2>Вход</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Имя пользователя:</label>
+                        <input type="text" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Пароль:</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Войти</button>
+                </form>
+                <p class="switch-auth">Нет аккаунта? <a href="#" id="showRegister">Зарегистрироваться</a></p>
+            </div>
+            <div id="registerSection" style="display: none;">
+                <h2>Регистрация</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerUsername">Имя пользователя:</label>
+                        <input type="text" id="registerUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Пароль:</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Зарегистрироваться</button>
+                </form>
+                <p class="switch-auth">Уже есть аккаунт? <a href="#" id="showLogin">Войти</a></p>
+            </div>
+            <div id="accountSection" style="display: none;">
+                <h2>Личный кабинет</h2>
+                <p>Пользователь: <span id="accountUsername"></span></p>
+                <button id="logoutBtn" class="submit-btn">Выйти</button>
+                <button id="ordersBtn" class="submit-btn">Мои заказы</button>
+                <div id="ordersList" style="margin-top: 20px;"></div>
+                <div id="supportChat" style="margin-top: 20px;">
+                    <h3>Чат поддержки</h3>
+                    <div id="chatMessages" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;"></div>
+                    <form id="chatForm" style="margin-top: 10px;">
+                        <input type="text" id="chatMessage" placeholder="Введите сообщение" required style="width: calc(100% - 90px); padding: 8px;">
+                        <button type="submit" class="submit-btn" style="width: 80px;">Отправить</button>
+                    </form>
+                </div>
+                <div id="adminSupport" style="display: none; margin-top: 20px;">
+                    <h3>Управление чатом поддержки</h3>
+                    <div id="adminChatMessages" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;"></div>
+                    <form id="adminChatForm" style="margin-top: 10px;">
+                        <input type="text" id="adminChatMessage" placeholder="Ответить как админ" required style="width: calc(100% - 90px); padding: 8px;">
+                        <button type="submit" class="submit-btn" style="width: 80px;">Отправить</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
