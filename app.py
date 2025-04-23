@@ -7,17 +7,15 @@ import os
 
 app = Flask(__name__)
 CORS(app)
-app.secret_key = os.getenv('SECRET_KEY', 'super-secret-key')  # Для сессий
+app.secret_key = os.getenv('SECRET_KEY', 'super-secret-key')
 
-# Настройка логирования
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Инициализация базы данных
 def init_db():
     with sqlite3.connect('orders.db') as conn:
         cursor = conn.cursor()
-        # Таблица пользователей
+        # Создаём таблицу users, если не существует
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,6 +24,16 @@ def init_db():
                 role TEXT DEFAULT 'user'
             )
         ''')
+        # Проверяем наличие столбцов и добавляем, если отсутствуют
+        cursor.execute("PRAGMA table_info(users)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if 'username' not in columns:
+            cursor.execute('ALTER TABLE users ADD COLUMN username TEXT NOT NULL UNIQUE')
+        if 'password' not in columns:
+            cursor.execute('ALTER TABLE users ADD COLUMN password TEXT NOT NULL')
+        if 'role' not in columns:
+            cursor.execute('ALTER TABLE users ADD COLUMN role TEXT DEFAULT "user"')
+
         # Таблица заказов
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS orders (
@@ -39,7 +47,7 @@ def init_db():
                 FOREIGN KEY (username) REFERENCES users (username)
             )
         ''')
-        # Таблица сообщений чата поддержки
+        # Таблица сообщений чата
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS support_messages (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,7 +59,7 @@ def init_db():
         ''')
         conn.commit()
 
-        # Создаём админа mot9lXVII
+        # Создаём админа
         admin_username = 'mot9lXVII'
         admin_password = '1337motya'.encode('utf-8')
         hashed_password = bcrypt.hashpw(admin_password, bcrypt.gensalt())
@@ -64,11 +72,9 @@ def init_db():
 
 init_db()
 
-# Проверка авторизации
 def is_authenticated():
     return 'username' in session
 
-# Проверка роли админа
 def is_admin():
     return is_authenticated() and session.get('role') == 'admin'
 
@@ -138,7 +144,7 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user[0]):
             session['username'] = username
             session['role'] = user[1]
-            return jsonify({'status': 'success', 'message': 'Вход успешен!'})
+            return jsonify({'status': 'success', 'message': 'Вход успешен!', 'role': user[1]})
         return jsonify({'status': 'error', 'message': 'Неверное имя пользователя или пароль'}), 401
     except Exception as e:
         logger.error(f"Login error: {e}")
